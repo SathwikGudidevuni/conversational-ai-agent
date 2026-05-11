@@ -45,3 +45,29 @@ def test_drive_connection():
   )
 
   return results.get("files", [])
+
+def search_files_by_name(name_text: str):
+  folder_id = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
+
+  if not folder_id:
+      raise ValueError("GOOGLE_DRIVE_FOLDER_ID is missing in .env")
+
+  service = get_drive_service()
+
+  query = (
+      f"'{folder_id}' in parents "
+      f"and trashed = false "
+      f"and name contains '{name_text}'"
+  )
+
+  results = (
+    service.files()
+    .list(
+        q=query,
+        fields="files(id, name, mimeType, webViewLink)",
+        pageSize=10,
+    )
+    .execute()
+  )
+
+  return results.get("files", [])
