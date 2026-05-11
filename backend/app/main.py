@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from backend.app.services.drive_service import test_drive_connection
 
 app = FastAPI(
   title="Conversational Google Drive AI Agent",
@@ -10,4 +11,12 @@ app = FastAPI(
 def root():
   return {
     "message": "Google Drive AI Agent backend is running"
+  }
+
+@app.get("/test-drive")
+def test_drive():
+  files = test_drive_connection()
+  return {
+    "count": len(files),
+    "files": files,
   }
