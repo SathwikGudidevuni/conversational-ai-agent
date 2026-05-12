@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from backend.app.services.drive_service import search_files_by_name, test_drive_connection
+from backend.app.services.llm_service import test_llm_connection
 
 app = FastAPI(
   title="Conversational Google Drive AI Agent",
@@ -29,3 +30,11 @@ def search(name: str):
       "count": len(files),
       "files": files,
   }
+
+@app.get("/test-llm")
+def test_llm():
+  response = test_llm_connection()
+  return {
+    "response": response,
+  }
+

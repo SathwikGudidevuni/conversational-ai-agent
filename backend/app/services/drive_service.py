@@ -50,7 +50,7 @@ def search_files_by_name(name_text: str):
   folder_id = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
 
   if not folder_id:
-      raise ValueError("GOOGLE_DRIVE_FOLDER_ID is missing in .env")
+    raise ValueError("GOOGLE_DRIVE_FOLDER_ID is missing in .env")
 
   service = get_drive_service()
 
