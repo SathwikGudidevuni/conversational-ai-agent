@@ -1,5 +1,5 @@
 import os
-
+import json
 from dotenv import load_dotenv
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -11,18 +11,26 @@ SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
 
 def get_drive_service():
-  credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    credentials_json = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+    credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
-  if not credentials_path:
-      raise ValueError("GOOGLE_APPLICATION_CREDENTIALS is missing in .env")
+    if credentials_json:
+      credentials_info = json.loads(credentials_json)
+      credentials = service_account.Credentials.from_service_account_info(
+          credentials_info,
+          scopes=SCOPES,
+      )
+    elif credentials_path:
+      credentials = service_account.Credentials.from_service_account_file(
+          credentials_path,
+          scopes=SCOPES,
+      )
+    else:
+      raise ValueError("Google credentials are missing")
 
-  credentials = service_account.Credentials.from_service_account_file(
-      credentials_path,
-      scopes=SCOPES,
-  )
+    service = build("drive", "v3", credentials=credentials)
+    return service
 
-  service = build("drive", "v3", credentials=credentials)
-  return service
 
 
 def test_drive_connection():

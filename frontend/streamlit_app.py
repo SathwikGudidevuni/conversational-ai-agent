@@ -1,7 +1,10 @@
+import os
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8000/chat"
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+API_URL = f"{BACKEND_URL}/chat"
+
 
 st.set_page_config(
   page_title="Google Drive AI Agent",
