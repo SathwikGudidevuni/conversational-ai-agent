@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from backend.app.services.query_builder import build_drive_query
 
 load_dotenv()
 
@@ -71,3 +72,28 @@ def search_files_by_name(name_text: str):
   )
 
   return results.get("files", [])
+
+def search_files_from_message(user_message: str):
+  folder_id = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
+
+  if not folder_id:
+    raise ValueError("GOOGLE_DRIVE_FOLDER_ID is missing in .env")
+
+  service = get_drive_service()
+  query = build_drive_query(user_message, folder_id)
+
+  results = (
+    service.files()
+    .list(
+      q=query,
+      fields="files(id, name, mimeType, webViewLink)",
+      pageSize=10,
+    )
+    .execute()
+  )
+
+  return {
+    "drive_query": query,
+    "files": results.get("files", []),
+  }
+

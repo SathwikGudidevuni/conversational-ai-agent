@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.app.services.drive_service import search_files_by_name, test_drive_connection
+from backend.app.services.drive_service import search_files_by_name,search_files_from_message, test_drive_connection
 from backend.app.services.llm_service import test_llm_connection
 
 app = FastAPI(
@@ -38,3 +38,12 @@ def test_llm():
     "response": response,
   }
 
+@app.get("/smart-search")
+def smart_search(message: str):
+  result = search_files_from_message(message)
+  return {
+    "message": message,
+    "drive_query": result["drive_query"],
+    "count": len(result["files"]),
+    "files": result["files"],
+  }
