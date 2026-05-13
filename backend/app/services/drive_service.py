@@ -47,7 +47,7 @@ def test_drive_connection():
       service.files()
       .list(
           q=query,
-          fields="files(id, name, mimeType, webViewLink)",
+          fields="files(id, name, mimeType, webViewLink, createdTime, modifiedTime)",
           pageSize=10,
       )
       .execute()
@@ -73,7 +73,7 @@ def search_files_by_name(name_text: str):
     service.files()
     .list(
         q=query,
-        fields="files(id, name, mimeType, webViewLink)",
+        fields="files(id, name, mimeType, webViewLink, createdTime, modifiedTime)",
         pageSize=10,
     )
     .execute()
@@ -94,7 +94,7 @@ def search_files_from_message(user_message: str):
     service.files()
     .list(
       q=query,
-      fields="files(id, name, mimeType, webViewLink)",
+      fields="files(id, name, mimeType, webViewLink, createdTime, modifiedTime)",
       pageSize=10,
     )
     .execute()

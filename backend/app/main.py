@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from backend.app.services.drive_service import search_files_by_name,search_files_from_message, test_drive_connection
@@ -11,6 +13,7 @@ app = FastAPI(
 
 class ChatRequest(BaseModel):
   message: str
+  history: list[dict[str, Any]] = []
 
 @app.get("/")
 def root():
@@ -59,7 +62,7 @@ def agent_search(message: str):
 
 @app.post("/chat")
 def chat(request: ChatRequest):
-  result = ask_agent(request.message)
+  result = ask_agent(request.message, request.history)
 
   return {
     "message": request.message,

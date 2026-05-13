@@ -23,11 +23,36 @@ def test_llm_connection():
   return response.content
 
 
-def ask_agent(user_message: str):
+def format_chat_history(chat_history):
+  if not chat_history:
+    return "No previous conversation."
+
+  recent_messages = chat_history[-6:]
+  lines = []
+
+  for message in recent_messages:
+    role = message.get("role", "user")
+    content = message.get("content", "")
+    lines.append(f"{role}: {content}")
+
+  return "\n".join(lines)
+
+
+def ask_agent(user_message: str, chat_history=None):
   llm = get_llm()
   llm_with_tools = llm.bind_tools([drive_search_tool])
 
-  response = llm_with_tools.invoke(user_message)
+  prompt = (
+    "You are a Google Drive file discovery assistant. "
+    "When the user wants to find files, call the drive_search_tool. "
+    "The tool can search by exact name, partial name, file type, fullText/content, "
+    "and modified date. If the user asks a follow-up question, rewrite it as a "
+    "complete search request before calling the tool.\n\n"
+    f"Recent conversation:\n{format_chat_history(chat_history)}\n\n"
+    f"User request: {user_message}"
+  )
+
+  response = llm_with_tools.invoke(prompt)
 
   if not response.tool_calls:
     return {
